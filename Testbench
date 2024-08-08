@@ -1,0 +1,29 @@
+module tb;
+    reg clk;
+    reg [15:0]uc;
+    wire [15:0]c;
+    wire [15:0]dc;
+    wire CoN1;
+    wire CoN2;
+    wire CoN4;
+    wire CoN5; wire CoN6;
+    wire [9:0]CCL1,CCL4;
+    wire [10:0]CCL2;
+    wire [12:0]CCL5;
+    wire [8:0]CCL6;
+
+    compressor dut(clk,uc,c,dc,CoN1,CoN2,CoN4,CoN5,CoN6,CCL1,CCL4,CCL2,CCL5,CCL6);
+
+    always
+        #5 clk=~clk;
+
+    initial begin
+        clk=1;
+        uc=16'b1111000011110000; #10
+        uc=16'b1110101110111011; #10
+        uc=16'b1110001100111000; #10
+        uc=16'b1010100011100011; #10
+        uc=16'b1010101001010111; #10
+        $stop();
+    end
+endmodule
