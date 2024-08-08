@@ -1,0 +1,122 @@
+ always @ (posedge clock) begin
+    
+        // BASE 8 DEL 1 BIT
+    
+        if (CoN1 == 1) begin
+            CompressedCache = CCL1;
+            DeCompressedCache[8:0] = CompressedCache[8:0]; // Base8
+            
+            if (mark8_1 == 0 || CompressedCache[9]==1'b0)
+                DeCompressedCache[15:9] = CompressedCache[7:1];
+            else
+                DeCompressedCache[15:9] = 7'b1111111;
+        end  
+        
+        // BASE 8 DEL 2 BITS
+    
+        else if (CoN2 == 1) begin
+            CompressedCache = CCL2;
+            DeCompressedCache[9:0] = CompressedCache[9:0]; // Base8
+            
+            if (mark8_1 == 0 || CompressedCache[10]==1'b0)
+                DeCompressedCache[15:10] = CompressedCache[7:2];
+            else
+                DeCompressedCache[15:10] = 6'b111111;
+                
+        end
+        
+        // BASE 4 DEL 1 BIT
+
+        else if (CoN4 == 1) begin
+            CompressedCache = CCL4; 
+            DeCompressedCache[3:0] = CompressedCache[3:0]; // Base4
+            
+            DeCompressedCache[4] = CompressedCache[4];
+            if(mark4_1 == 0 || CompressedCache[7])
+                DeCompressedCache[7:5] = CompressedCache[3:1];
+            else
+                DeCompressedCache[7:5] = 3'b111;
+     
+            DeCompressedCache[8] = CompressedCache[5];
+            if(mark4_2 == 0 || CompressedCache[8])
+                DeCompressedCache[11:9] = CompressedCache[3:1];
+            else 
+                DeCompressedCache[11:9] = 3'b111;
+            
+            DeCompressedCache[12] = CompressedCache[6];
+            if(mark4_3 == 0 || CompressedCache[9])
+                DeCompressedCache[15:13] = CompressedCache[3:1];
+            else 
+                DeCompressedCache[15:13] = 3'b111;
+            
+        end   
+        //BASE 4 DEL 2 BITS
+    
+        else if(CoN5==1)begin
+            CompressedCache = CCL5; 
+            DeCompressedCache[3:0] = CompressedCache[3:0]; //Base4
+        
+            DeCompressedCache[5:4] = CompressedCache[5:4];
+            if(mark4_1 == 0 || CompressedCache[10])
+                DeCompressedCache[7:6] = CompressedCache[3:2];
+            else 
+                DeCompressedCache[7:6] = 2'b11;
+            
+            DeCompressedCache[9:8] = CompressedCache[7:6];
+            if(mark4_2 == 0 || CompressedCache[11])
+                DeCompressedCache[11:10] = CompressedCache[3:2];
+            else 
+                DeCompressedCache[11:10] = 2'b11;
+            
+            DeCompressedCache[13:12] = CompressedCache[13:12];
+            if(mark4_3 == 0 || CompressedCache[12])
+                DeCompressedCache[15:14] = CompressedCache[3:2];
+            else 
+                DeCompressedCache[15:1] = 2'b11;
+                
+        end   
+           
+       //BASE 2 DEL 1 BIT
+    
+        else if(CoN6==1) begin
+            CompressedCache = CCL6; 
+            DeCompressedCache[1:0] = CompressedCache[1:0]; //Base2
+            
+            if(mark2_1 == 0 || CompressedCache[2])
+                DeCompressedCache[3:2] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[3:2] = 2'b11;
+            
+            if(mark2_2 == 0 || CompressedCache[3])
+                DeCompressedCache[5:4] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[5:4] = 2'b11;
+            
+            if(mark2_3 == 0 || CompressedCache[4])
+                DeCompressedCache[7:6] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[7:6] = 2'b11;
+            
+            if(mark2_4 == 0 || CompressedCache[5])
+                DeCompressedCache[9:8] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[9:8] = 2'b11;
+            
+            if(mark2_5 == 0 || CompressedCache[6])
+                DeCompressedCache[11:10] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[11:10] = 2'b11;
+            
+            if(mark2_6 == 0 || CompressedCache[7])
+                DeCompressedCache[13:12] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[13:12] = 2'b11;
+            
+            if(mark2_7 == 0 || CompressedCache[8])
+                DeCompressedCache[15:14] = CompressedCache[1:0];
+            else 
+                DeCompressedCache[15:14] = 2'b11;
+            
+            //No Compression feasible
+        end
+        else
