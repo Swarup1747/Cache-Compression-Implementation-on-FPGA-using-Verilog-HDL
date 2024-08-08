@@ -1,0 +1,164 @@
+module compressor(
+    input clock,
+    input [15:0]UnCompressedCache,
+    output reg[15:0] CompressedCache,
+    output reg [15:0] DeCompressedCache,
+    output reg CoN1,
+    output reg CoN2,
+    output reg CoN4,
+    output reg CoN5,
+    output reg CoN6,
+    output reg [9:0]CCL1,
+    output reg [9:0]CCL4,
+    output reg [10:0]CCL2,
+    output reg [12:0]CCL5,
+    output reg [8:0]CCL6
+    );
+    
+//    reg [9:0]CCL1;
+//    reg [9:0]CCL4;
+//    reg [10:0]CCL2;
+//    reg [12:0]CCL5;
+//    reg [8:0]CCL6;
+    reg mark8_1 = 0;
+    reg mark4_1 = 0, mark4_2 = 0, mark4_3 = 0;
+    reg mark2_1 = 0, mark2_2 = 0, mark2_3 = 0, mark2_4 = 0, mark2_5 = 0, mark2_6 = 0,mark2_7 = 0;
+    
+    reg [7:0]Base8,del8_1;
+    reg [3:0]Base4,del4_1,del4_2,del4_3;
+    reg [1:0]Base2,del2_1,del2_2,del2_3,del2_4,del2_5,del2_6,del2_7;
+
+    always @ (posedge clock) begin
+
+        Base8 = UnCompressedCache[7:0]; //Base is the first value
+        Base4 = UnCompressedCache[3:0];
+        Base2 = UnCompressedCache[1:0];
+
+        // BASE 8
+
+        if (Base8 > UnCompressedCache[15:8])
+            del8_1 = Base8 - UnCompressedCache[15:8];
+        else begin
+            del8_1 = UnCompressedCache[15:8] - Base8 ;
+            mark8_1 = 1;
+        end
+
+        if ((del8_1[7:1]==7'b0000000)||(del8_1[7:1]==7'b1111111)) begin
+            CoN1 = 1;
+            CCL1 = {del8_1[1],del8_1[0],Base8};
+        end
+        
+        else begin
+            CoN1 = 0;
+        end
+
+        if ((del8_1[7:2]==6'b000000) || (del8_1[7:2]==6'b111111))begin
+            CoN2 = 1;
+            CCL2 = {del8_1[2],del8_1[1:0],Base8};
+        end
+        else begin
+            CoN2 = 0;
+        end
+
+        //BASE 4
+
+        if (Base4 > UnCompressedCache[7:4])
+            del4_1 = Base4 - UnCompressedCache[7:4];
+        else begin
+            del4_1 = UnCompressedCache[7:4] - Base4 ;
+            mark4_1 = 1;
+        end
+
+        if (Base4 > UnCompressedCache[11:8])
+            del4_2 = Base4 - UnCompressedCache[11:8];
+        else begin
+            del4_2 = UnCompressedCache[11:8] - Base4 ;
+            mark4_2 = 1;
+        end
+
+        if (Base4 > UnCompressedCache[15:12])
+            del4_3 = Base4 - UnCompressedCache[15:12];
+        else begin
+            del4_3 = UnCompressedCache[15:12] - Base4 ;
+            mark4_3=1;
+        end
+
+        if( (del4_1[3:1]==3'b0000 || del4_1[3:1]==3'b111) && (del4_2[3:1]==3'b000 || del4_2[3:1]==3'b111)
+            && (del4_3[3:1]==3'b000 || del4_3[3:1]==3'b111)) begin
+            CoN4 = 1;
+            CCL4 = {del4_3[1],del4_2[1],del4_1[1],del4_3[0],del4_2[0],del4_1[0],Base4};
+        end
+        else begin
+            CoN4 = 0;
+        end
+
+        if((del4_1[3:2]==2'b00 || del4_1[3:2]==2'b11) && (del4_2[3:2]==2'b00 || del4_2[3:2]==2'b11)
+            && (del4_3[3:2]==2'b00) || (del4_3[3:2]==2'b11)) begin
+            CoN5 = 1;
+            CCL5 = {del4_3[2],del4_2[2],del4_1[2],del4_3[1:0],del4_2[1:0],del4_1[1:0],Base4};
+        end
+        else begin
+            CoN5 = 0;
+        end
+        
+        //BASE 2
+
+        if (Base2 > UnCompressedCache[3:2])
+            del2_1 = Base2 - UnCompressedCache[3:2];
+        else begin
+            del2_1 = UnCompressedCache[3:2] - Base2 ;
+            mark2_1 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[5:4])
+            del2_2 = Base2 - UnCompressedCache[5:4];
+        else begin
+            del2_2 = UnCompressedCache[5:4] - Base2 ;
+            mark2_2 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[7:6])
+            del2_3 = Base2 - UnCompressedCache[7:6];
+        else begin
+            del2_3 = UnCompressedCache[7:6] - Base2 ;
+            mark2_3 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[9:8])
+            del2_4 = Base2 - UnCompressedCache[9:8];
+        else begin
+            del2_4 = UnCompressedCache[9:8] - Base2 ;
+            mark2_4 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[11:10])
+            del2_5 = Base2 - UnCompressedCache[11:10];
+        else begin
+            del2_5 = UnCompressedCache[11:10] - Base2 ;
+            mark2_5 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[13:12])
+            del2_6 = Base2 - UnCompressedCache[13:12];
+        else begin
+            del2_6 = UnCompressedCache[13:12] - Base2 ;
+            mark2_6 = 1;
+        end
+
+        if (Base2 > UnCompressedCache[15:14])
+            del2_7 = Base2 - UnCompressedCache[15:14];
+        else begin
+            del2_7 = UnCompressedCache[15:14] - Base2 ;
+            mark2_7 = 1;
+        end
+
+        if((del2_1==2'b00 || del2_1==2'b11) && (del2_2==2'b00 || del2_2==2'b11)
+            && (del2_3==2'b00 || del2_3==2'b11)  && (del2_4==2'b00 || del2_4==2'b11)
+            && ((del2_5==2'b00 || del2_5==2'b11)  && (del2_6==2'b00 || del2_6==2'b11) && (del2_7==2'b00) || del2_7==2'b11))begin
+            CoN6 = 1;
+            CCL6 ={del2_7[0],del2_6[0],del2_5[0],del2_4[0],del2_3[0],del2_2[0],del2_1[0],Base2};
+        end
+        else begin
+            CoN6 = 0;
+        end
+    end
