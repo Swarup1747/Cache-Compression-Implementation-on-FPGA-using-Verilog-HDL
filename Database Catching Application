@@ -1,0 +1,10 @@
+module Database_Catching(
+ input clock,
+ input [15:0] input_data,
+ output [15:0] stored_data
+ );
+ wire clk;
+ wire [15:0] regenerated_data;
+ clock c6(clock,clk);
+ compressor c7(clk,input_data,stored_data,regenated_data);
+ endmodule
